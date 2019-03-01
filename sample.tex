@@ -102,7 +102,7 @@
                 \begin{itemize}
                     \item 時変値をノードとし依存関係を辺とした有向非巡回グラフ(DAG)を構成
                     \item Emfrpの処理系では依存関係に沿ってノードの値を順次更新することを繰り返しりアクティブなシステムを実現している
-                    \item この例では例えばtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順
+                    \item この例では例えばtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順で更新する
                     \item しかし，現在のEmfrpの処理系はノードの更新が逐次的に行われているので，ノードの更新を並列に行うことを提案する
                     \item OSがない環境や小規模なFree-RTOSなどの環境ではOSによるスケジューリングが利用できないことがある
                     \item またOSのスケジューリングが可能な場合でも
@@ -136,6 +136,7 @@
             \end{column}
             \begin{column}{0.3\textwidth}
                 \begin{center}
+                    \vskip -3ex
                     \includegraphics[scale=0.2]{image/RandomGraph.png}
                 \end{center}
             \end{column}
