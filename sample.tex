@@ -57,6 +57,7 @@
 
 
 \setbeamerfont{block title}{size=\Large}
+%\setbeamerfont{block body}{size=\large}
 \setbeamerfont{block body}{size=\large}
 
 \setbeamertemplate{itemize/enumerate body begin}{\large}
@@ -81,8 +82,7 @@
         \vskip 1ex
         \begin{itemize}
             \item 本研究の目的は小規模組込みシステム向けFRP言語Emfrpの応答性向上である．
-            \item 既存の小規模組込みシステム向けFRP言語であるEmfrpの実行モデルはシングルスレッドにしか対応していない．
-            \item マルチコアCPUの上で動作させたときに十分に計算資源を活用できない．
+            \item 既存の小規模組込みシステム向けFRP言語であるEmfrpの実行モデルはシングルスレッドにしか対応していないため，マルチコアCPUの上で動作させたときに十分に計算資源を活用できない．
             \item 本研究では応答性向上のために静的スケジューリングを用いてEmfrpの実行モデルを並列化した純粋FRP言語XFRP-Coreを開発した．
         \end{itemize}
         \vskip -2.5ex
@@ -110,17 +110,18 @@
                 \end{itemize}
             \end{column}
         \end{columns}
+        \vskip-.3cm
     \end{block}
 
     \begin{block}{並列化アルゴリズム}
         \vskip 0.25cm
-        本研究が提案するアルゴリズムはコンパイル時に静的にスケジューリングする．
-        ただし，コンパイル時に使用するスレッド数は決定されていることを前提とする．
+        本研究で提案するアルゴリズムはコンパイル時に静的にスケジューリングを行う．
+        ただし，コンパイル時に使用できる最大スレッド数は決定されていることを前提とする．
         下の図は実験で用いたアプリケーションを表現するグラフの一部であり，これを例とする．
         \begin{columns}
             \begin{column}{0.665\textwidth}
                 提案する並列化アルゴリズムは各ノードから最も遠い到達可能なsinkノードへの距離を基準にスケジューリングを行う．
-                ここでsinkノードとはグラフで出自数が0のノードであり，右の例ではノード$e_1,e_2$が相当する．
+                ここでsinkノードとはグラフで出次数が0のノードであり，右の例ではノード$e_1,e_2$が相当する．
                 グラフのノードの右上の数字が最も遠い到達可能なsinkノードへの距離である．
                 並列化はこの最も遠い到達可能なsinkノードへの距離が等しいノードを並列に実行することで実現される．
                 例えば，右のグラフのノード$a_1,a_2$は等しく距離3なので同時に実行可能，ノード$c_1,d_1,c_2,d_2$は等しく距離1なので同時に実行可能となる．
@@ -149,13 +150,13 @@
                 \end{center}
             \end{column}
         \end{columns}
-        %\vskip-.7cm
+        \vskip-.3cm
     \end{block}
 
-    \begin{block}{実験}
+    \begin{block}{予備実験}
         \vskip 0.2cm
             提案する並列化アルゴリズムの性能を評価するために，XFRP-Core上で提案する実行モデルとEmfrpの実行モデルを実装し，$10^5$サイクルにかかる時間を測定した．
-            実験は，Core i7-975上のUbuntu12.04で行った．
+            実験は，Core i7-975 3.33GHz上のUbuntu12.04で行った．
             並列化にはPthreadを使用し，同期にはPthreadライブラリで実装されているバリア同期を使用した．
             実験ではEmfrpの実行モデルは1スレッドで実行し，XFRP-Coreは2スレッドと4スレッドでそれぞれ10回計測し，その平均時間を実験結果とした．
             実験対象のアプリケーションとして，LifeGameと熱拡散シュミレータをXFRP上で実装した．
