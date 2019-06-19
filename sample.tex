@@ -1,5 +1,5 @@
 %\documentclass[dvipdfmx]{beamer}
-\documentclass[dvipdfmx,final,t,12pt]{beamer}
+\documentclass[dvipdfmx,final,t,10pt]{beamer}
 \usepackage[orientation=portrait,size=a4,scale=1.4]{beamerposter}%縦 : orientation=portrait, 横 : orientation=landscape
 \usepackage{here, amsmath, latexsym, amssymb, bm, ascmac, mathtools, multicol, tcolorbox}
 \usepackage{listings}
@@ -64,10 +64,11 @@
 \setbeamertemplate{itemize/enumerate subsubbody begin}{\large}
 
 %\setbeamersize{text margin left = 2.5ex, text margin right = 1.2ex}
+\setbeamersize{text margin left = 2.5ex, text margin right = 2.5ex}
 %\addtobeamertemplate{block begin}{\ }{}
 %\setbeamercolor{block body}{bg=gray}
 
-\title{組込みシステム向けFRP言語の\\静的スケジューリングを用いた並列化}
+\title{組込みシステム向けFRP言語の\\実行モデルの並列化}
 \author{櫻井義孝・渡部卓雄}
 \institute{東京工業大学}
 
@@ -91,22 +92,23 @@
 
     \begin{block}{Emfrp \small{[Sawada2016]}}
         \begin{columns}
-            \begin{column}{0.45\textwidth}
+            \begin{column}{0.4\textwidth}
                 \vskip -1.15ex
                 小規模組込みシステム向けFRP言語
                 \lstinputlisting{./code/FanController.xfrp}
                 \begin{center}
                     \vskip -3ex
-                    \includegraphics[scale=0.15]{./image/FanController.png}
+                    \includegraphics[scale=0.3]{./image/FanController.png}
                 \end{center}
             \end{column}
-            \begin{column}{0.45\textwidth}
+            \begin{column}{0.55\textwidth}
+                \vskip -0.4cm
                 \begin{itemize}
                     \item Emfrpのプログラムは，時変値をノードとし依存関係を辺とした有向非巡回グラフ(DAG)を構成する．
-                    \item 現在のEmfrpの処理系ではノードの更新は逐次的に行われる．左に挙げた例の場合，DAGをトポロジカルソートしたtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順に更新が行われる．この1回の更新(サイクル)を繰り返すことでリアクティブな動作を実現している．
-                    \item 1サイクルにかかる時間がシステムの応答性を決める．本研究では，マルチコアシステムでの応答性向上を目的とした並列化方式を提案する．プログラムの実行環境として，OSのない環境，あるいはFreeRTOS程度の小規模RTOSを考える．
-                    \item これらの環境ではOSのスケジューラによる適切なスケジューリングは期待できない．本研究では各サイクルの計算時間を短縮し，可能であれば応答時間を予測できるような静的スケジューリング方式を提案する．
-                    %\item { TODO: 組込みシステムでは普通のコンピュータとどの辺りが異なるかとかなぜ静的に並列化するかとか}
+                    \item 現在のEmfrpの処理系ではノードの更新は逐次的に行われる．左に挙げた例の場合，DAGをトポロジカルソートしたtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順に更新が行われる．この更新(サイクル)を繰り返すことでリアクティブな動作を実現している．
+                    \item 1サイクルにかかる時間がシステムの応答性を決める．本研究では，マルチコアシステムでの応答性向上を目的とした並列化方式を提案する．実行環境として汎用的なOSだけでなく，OSのない環境やFreeRTOS程度の小規模RTOSを考える．
+                    \item 本研究の想定環境にはOSによるスケジューラによる適切なスケジューリングが期待できない環境も含まれている．そのため，実行モデルを並列化する際に実行モデルはOSのスケジューラに依存しないで動作する必要がある．
+                    \item 本研究では，各サイクルの計算時間を短縮し，可能であれば応答時間を予測できるような静的スケジューリング方式を提案する．
                 \end{itemize}
             \end{column}
         \end{columns}
@@ -141,8 +143,8 @@
             \end{column}
             \begin{column}{0.3\textwidth}
                 \begin{center}
-                    \vskip-0.2cm
-                    \includegraphics[scale=0.2]{image/RandomGraph.png}
+                    \vskip-0.1cm
+                    \includegraphics[scale=0.18]{image/RandomGraph.png}
                 \end{center}
             \end{column}
         \end{columns}
@@ -151,18 +153,23 @@
 
     \begin{block}{実験}
         \vskip 0.2cm
-            実験は上記のアルゴリズムで並列化した際にどの程度プログラムの応答性が向上するかを調べることを目的とする．
-            実験対象として100x100のサイズのLifeGameを実装し，並列化しなかった場合とPthreadを用いて並列化した場合での実行時間を計測した．
-            実験環境はi5-7200U(CPU)上のUbuntu18.04で行った．
+            提案する並列化アルゴリズムの性能を評価するために，XFRP-Core上で提案する実行モデルとEmfrpの実行モデルを実装し，一定サイクルにかかる時間を測定した．
+            実験環境には，Intel Core i7-975，RAM12GB上のUbuntu12.04を使用した．
+            本実験では並列化にはPthreadを使用した．
+            実験対象のアプリケーションとして，LifeGameと熱拡散シュミレータをXFRP上で実装した．
+            実験では100000サイクルにかかる時間を10回計測し，その平均を扱った．
+            実験結果は以下の表のようになった．
         \begin{columns}
-            \begin{column}{0.25\textwidth}
-                \includegraphics[scale=0.23]{image/graph1.png}
-            \end{column}
-            \begin{column}{0.25\textwidth}
-                \includegraphics[scale=0.23]{image/graph2.png}
+            \begin{column}{0.5\textwidth}
+                \begin{table}
+                    \begin{tabular}{|l|c|r|r|} \hline
+                        アプリケーション & Emfrp & XFRP-Core(2) & XFRP-Core(4) \\ \hline
+                        LifeGame & 203.61(sec) & 108.04(sec) & 64.05(sec) \\ \hline
+                    \end{tabular}
+                \end{table}
             \end{column}
             \begin{column}{0.4\textwidth}
-                \vskip -3.2cm
+                %\vskip -3.2cm
                 左はLifeGameを30000ループするのにかかった時間であり，右はノードに30000ナノ秒のビジーウェイトを挟んで100ループしたときにかかった時間である．
                 左では4スレッド使用したにも関わらず30\%程度しか時間が削減できていない．
                 一方で，ノードの実行時間が大きくると右のように4スレッドで実行時間が27\%になった．
