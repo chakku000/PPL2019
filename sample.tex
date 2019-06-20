@@ -13,10 +13,16 @@
 \renewcommand{\kanjifamilydefault}{\gtdefault}
 \usepackage[deluxe, expert]{otf}
 \usepackage{minijs}  %min10
+\usepackage{color}
+\usepackage{pxfonts}
+
+\definecolor{keycolor}{RGB}{108,48,130}
 
 \lstset{
     frame=single,
     basicstyle={\ttfamily\footnotesize},
+    keywordstyle=\bfseries\color{keycolor},
+    morekeywords={in,out,node,module,use,init,if,then,else}
 }
 
 %カラーテーマの選択(省略可)
@@ -79,20 +85,23 @@
 \begin{frame}[fragile]
     \vskip -2.5ex
     \begin{block}{概要}
-        \vskip 1ex
-        \begin{itemize}
-            \item 本研究の目的は小規模組込みシステム向けFRP言語Emfrpの応答性向上である．
-            \item 既存の小規模組込みシステム向けFRP言語であるEmfrpの実行モデルはシングルスレッドにしか対応していないため，マルチコアCPUの上で動作させたときに十分に計算資源を活用できない．
-            \item 本研究では応答性向上のために静的スケジューリングを用いてEmfrpの実行モデルを並列化した純粋FRP言語XFRP-Coreを開発した．
-        \end{itemize}
-        \vskip -2.5ex
+        \vskip.3cm
+        %\begin{itemize}
+        %    \item 本研究の目的は小規模組込みシステム向け関数型リアクティブプログラミング(FRP)言語Emfrpの応答性向上である．
+        %    \item Emfrpの既存の実行モデルはシングルスレッドにしか対応していないため，マルチコアCPUの上で動作させたときに十分に計算資源を活用できない．
+        %    \item 本研究では静的スケジューリングを用いてEmfrpの実行モデルを並列化した純粋FRP言語XFRP-Coreを開発する．本発表では予備実験としてPthreadを用いて実現したランタイムにもとづく評価結果を示す．
+        %\end{itemize}
+        本研究の目的は小規模組込みシステム向け関数型リアクティブプログラミング(FRP)言語Emfrpの応答性向上である．
+        Emfrpの既存の実行モデルはシングルスレッドにしか対応していないため，マルチコアCPUの上で動作させたときに十分に計算資源を活用できない．
+        本研究では静的スケジューリングを用いてEmfrpの実行モデルを並列化した純粋FRP言語XFRP-Coreを開発する．本発表では予備実験としてPthreadを用いて実現したランタイムにもとづく評価結果を示す．
+        \vskip -1.5ex
     \end{block}
 
     \begin{block}{Emfrp \small{[Sawada2016]}}
         \begin{columns}
             \begin{column}{0.4\textwidth}
                 \vskip -1.15ex
-                小規模組込みシステム向けFRP言語Emfrp
+                %小規模組込みシステム向けFRP言語Emfrp
                 \lstinputlisting{./code/FanController.xfrp}
                 \begin{center}
                     \vskip -3ex
@@ -100,14 +109,21 @@
                 \end{center}
             \end{column}
             \begin{column}{0.55\textwidth}
-                \vskip -0.4cm
-                \begin{itemize}
-                    \item Emfrpのプログラムは，時変値をノードとし依存関係を辺とした有向非巡回グラフ(DAG)を構成する．
-                    \item 現在のEmfrpの処理系ではノードの更新は逐次的に行われる．左に挙げた例の場合，DAGをトポロジカルソートしたtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順に更新が行われる．この更新(サイクル)を繰り返すことでリアクティブな動作を実現している．
-                    \item 1サイクルにかかる時間がシステムの応答性を決める．本研究では，マルチコアシステムでの応答性向上を目的とした並列化方式を提案する．実行環境として汎用的なOSだけでなく，OSのない環境やFreeRTOS程度の小規模RTOSを考える．
-                    \item 本研究の想定環境にはOSによるスケジューラによる適切なスケジューリングが期待できない環境も含まれている．そのため，実行モデルを並列化する際に実行モデルはOSのスケジューラに依存しないで動作する必要がある．
-                    \item 本研究では，各サイクルの計算時間を短縮し，可能であれば応答時間を予測できるような静的スケジューリング方式を提案する．
-                \end{itemize}
+                %\vskip -0.4cm
+                %\begin{itemize}
+                %    \item Emfrpのプログラムは，時変値をノードとし依存関係を辺とした有向非巡回グラフ(DAG)を構成する．
+                %    \item 現在の処理系ではノードの更新は逐次的に行われる．左に挙げた例の場合，DAGをトポロジカルソートしたtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順に更新が行われる．この更新(サイクル)を繰り返すことでリアクティブな動作を実現している．
+                %    \item 1サイクルにかかる時間がシステムの応答性を決める．本研究では，マルチコアシステムでの応答性向上を目的とした並列化方式を提案する．実行環境として汎用的なOSだけでなく，OSのない環境やFreeRTOS程度の小規模RTOSを考える．
+                %    \item 本研究の想定環境にはOSによるスケジューラによる適切なスケジューリングが期待できない環境も含まれている．そのため，実行モデルを並列化する際に実行モデルはOSのスケジューラに依存しないで動作する必要がある．
+                %    \item 本研究では，各サイクルの計算時間を短縮し，可能であれば応答時間を予測できるような静的スケジューリング方式を提案する．
+                %\end{itemize}
+                \vskip 0.01cm
+                小規模組込みシステム向けFRP言語Emfrpのプログラムは，時変値をノードとし依存関係を辺とした有向非巡回グラフ(DAG)を構成する．
+                左にEmfrpで実装されたアプリケーションFanControllerのソースコードと，それによって構築されるシステムのDAGを示す．
+                現在の処理系ではノードの更新は逐次的に行われる．左に挙げた例の場合，DAGをトポロジカルソートしたtmp$\rightarrow$hmd$\rightarrow$di$\rightarrow$th$\rightarrow$fanの順に更新が行われる．この更新(サイクル)を繰り返すことでリアクティブな動作を実現している．
+                1サイクルにかかる時間がシステムの応答性を決める．本研究では，マルチコアシステムでの応答性向上を目的とした並列化方式を提案する．実行環境として汎用的なOSだけでなく，OSのない環境やFreeRTOS程度の小規模RTOSを考える．
+                本研究の想定環境にはOSによるスケジューラによる適切なスケジューリングが期待できない環境も含まれている．そのため，実行モデルを並列化する際に実行モデルはOSのスケジューラに依存しないで動作する必要がある．
+                本研究では，各サイクルの計算時間を短縮し，可能であれば応答時間を予測できるような静的スケジューリング方式を提案する．
             \end{column}
         \end{columns}
         \vskip-.3cm
@@ -154,12 +170,14 @@
     \end{block}
 
     \begin{block}{予備実験}
-        \vskip 0.2cm
+        \vskip 0.3cm
             提案する並列化アルゴリズムの性能を評価するために，XFRP-Core上で提案する実行モデルとEmfrpの実行モデルを実装し，$10^5$サイクルにかかる時間を測定した．
             実験は，Core i7-975 3.33GHz上のUbuntu12.04で行った．
             並列化にはPthreadを使用し，同期にはPthreadライブラリで実装されているバリア同期を使用した．
             実験ではEmfrpの実行モデルは1スレッドで実行し，XFRP-Coreは2スレッドと4スレッドでそれぞれ10回計測し，その平均時間を実験結果とした．
             実験対象のアプリケーションとして，LifeGameと熱拡散シュミレータをXFRP上で実装した．
+            LifeGameは100x100のセルで行うシュミレーションゲームである．
+            熱拡散シュミレータは鉄板を100x100のブロックに区切り，各ブロックの初期温度を与えたときに一定時間後の各ブロックの温度をシュミレートするアプリケーションである．
             アプリケーションで使用される時変値の数はそれぞれ$5\times10^5$個と$3\times10^5$個となった．
             実験結果は以下の表のようになった．
         \begin{columns}
